@@ -98,4 +98,47 @@ def is_near_square(price, tolerance=0.1):
     nearest_square = round(root) ** 2
     diff = abs(price - nearest_square)
     return diff <= (price * tolerance / 100) # Tolerance in percentage
+import streamlit as st
+import yfinance as yf
+import pandas as pd
+
+st.title("Dhaval's Spring Scanner & Gann Dashboard")
+
+# 1. Stocks ki list (Aap yahan aur bhi add kar sakte hain)
+stocks = ["NTPC.NS", "RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS", "ITC.NS"]
+
+def get_spring_stocks(stock_list):
+    spring_results = []
+    for ticker in stock_list:
+        data = yf.download(ticker, period="2d", interval="1d")
+        if len(data) >= 2:
+            # Latest candle ka data
+            high = data['High'].iloc[-1]
+            low = data['Low'].iloc[-1]
+            close = data['Close'].iloc[-1]
+            
+            range_pct = ((high - low) / close) * 100
+            
+            if range_pct < 1.0:
+                # Gann calculation (Simplified)
+                gann_res = (close**0.5 + 0.125)**2 # 45 degree approx
+                gann_sup = (close**0.5 - 0.125)**2
+                
+                spring_results.append({
+                    "Stock": ticker,
+                    "Range %": round(float(range_pct), 2),
+                    "High (Trigger)": round(float(high), 2),
+                    "Low (SL)": round(float(low), 2),
+                    "Gann Target": round(float(gann_res), 2)
+                })
+    return spring_results
+
+if st.button('Scan for Spring Candles'):
+    results = get_spring_stocks(stocks)
+    if results:
+        df = pd.DataFrame(results)
+        st.success(f"Found {len(results)} Spring Candles!")
+        st.table(df)
+    else:
+        st.warning("Aaj koi Spring Candle nahi mili.")
 
