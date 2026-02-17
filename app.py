@@ -68,3 +68,26 @@ if pivot_date:
         next_days = (sqrt_t + val)**2
         reversal_date = pivot_date + timedelta(days=int(next_days))
         st.info(f"**{label} Reversal Date:** {reversal_date.strftime('%d %b %Y')}")
+import streamlit as st
+
+def calculate_fibonacci(high, low):
+    diff = high - low
+    levels = {
+        "100% (Low)": low,
+        "61.8%": high - diff * 0.618,
+        "50.0%": high - diff * 0.5,
+        "38.2%": high - diff * 0.382,
+        "23.6%": high - diff * 0.236,
+        "0% (High)": high
+    }
+    return levels
+
+# Streamlit UI
+st.title("Gann + Fibonacci Calculator")
+low_val = st.number_input("Enter Swing Low", value=303.0)
+high_val = st.number_input("Enter Swing High", value=328.0)
+
+if st.button("Calculate Levels"):
+    fib_levels = calculate_fibonacci(high_val, low_val)
+    for level, price in fib_levels.items():
+        st.write(f"**{level}:** {price:.2f}")
