@@ -1,31 +1,43 @@
-import streamlit as st
 import math
 
-st.set_page_config(page_title="Dhaval's Gann Calc", page_icon="📈")
-st.title("🏹 Dhaval's Gann Calculator")
-
-# Input for stock price
-price = st.number_input("Enter Stock Price", min_value=1.0, value=302, step=0.05)
-
-if price:
-    sqrt_p = math.sqrt(price)
-    # Degrees: 90 (0.5), 180 (1.0), 360 (2.0)
-    levels = {"90°": 0.5, "180°": 1.0, "360°": 2.0}
+def calculate_gann_levels(price):
+    degrees = [45, 90, 135, 180, 270, 360]
+    results = {"Resistance": {}, "Support": {}}
     
-    st.write("---")
-    col1, col2 = st.columns(2)
+    root = math.sqrt(price)
     
-    with col1:
-        st.subheader("🟢 Resistance")
-        for deg, val in levels.items():
-            res = (sqrt_p + val)**2
-            st.success(f"{deg}: ₹{res:.2f}")
+    for d in degrees:
+        # Factor is Degree / 180
+        factor = d / 180
+        results["Resistance"][f"{d}°"] = round((root + factor)**2, 2)
+        results["Support"][f"{d}°"] = round((root - factor)**2, 2)
+    
+    return results
 
-    with col2:
-        st.subheader("🔴 Support")
-        for deg, val in levels.items():
-            sup = (sqrt_p - val)**2
-            st.error(f"{deg}: ₹{sup:.2f}")
+def calculate_fibonacci(high, low):
+    diff = high - low
+    levels = {
+        "0.0%": high,
+        "23.6%": round(high - 0.236 * diff, 2),
+        "38.2%": round(high - 0.382 * diff, 2),
+        "50.0%": round(high - 0.5 * diff, 2),
+        "61.8%": round(high - 0.618 * diff, 2),
+        "100.0%": low
+    }
+    return levels
 
+# Current Nifty 50 Data (Feb 18, 2026)
+nifty_price = 25725
+nifty_high = 26173
+nifty_low = 25570
 
+gann = calculate_gann_levels(nifty_price)
+fib = calculate_fibonacci(nifty_high, nifty_low)
 
+print(f"--- Nifty 50 Gann Levels (Base: {nifty_price}) ---")
+for deg, val in gann["Resistance"].items():
+    print(f"Resistance {deg}: {val} | Support {deg}: {gann['Support'][deg]}")
+
+print(f"\n--- Fibonacci Retracement (Range: {nifty_low} - {nifty_high}) ---")
+for lvl, val in fib.items():
+    print(f"{lvl}: {val}")
