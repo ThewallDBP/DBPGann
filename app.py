@@ -91,3 +91,13 @@ if st.button("Calculate Levels"):
     fib_levels = calculate_fibonacci(high_val, low_val)
     for level, price in fib_levels.items():
         st.write(f"**{level}:** {price:.2f}")
+import math
+
+def is_near_square(price, tolerance=0.1):
+    root = math.sqrt(price)
+    nearest_square = round(root) ** 2
+    diff = abs(price - nearest_square)
+    return diff <= (price * tolerance / 100) # Tolerance in percentage
+
+# 324 ke liye check karega:
+# Agar ITC 323.5 se 324.5 ke bich hai, toh alert dega.
