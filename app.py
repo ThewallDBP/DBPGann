@@ -83,7 +83,7 @@ from datetime import datetime, timedelta
 # Page Configuration
 st.set_page_config(page_title="Dhaval's Trading Terminal", layout="wide")
 
-st.title("🚀 Dhaval's Live Trading Dashboard")
+st.title("Nifty50")
 
 # --- LIVE PRICE SECTION ---
 st.subheader("Live Market Indices")
@@ -120,62 +120,3 @@ if tool == "Gann Degrees":
     else:
         price = st.number_input("Enter Price Manually", value=22000.0)
     
-    if st.button("Calculate Gann"):
-        degrees = [45, 90, 180, 270, 360]
-        root = math.sqrt(price)
-        
-        c1, c2 = st.columns(2)
-        with c1:
-            st.subheader("Resistance (Upper)")
-            for d in degrees:
-                res = (root + (d/180))**2
-                st.success(f"{d}° Resistance: {res:.2f}")
-        with c2:
-            st.subheader("Support (Lower)")
-            for d in degrees:
-                sup = (root - (d/180))**2
-                st.error(f"{d}° Support: {sup:.2f}")
-
-# --- 2. GANN DATE PRO ---
-elif tool == "Gann Date Pro":
-    st.header("📅 Gann Time Cycle")
-    base_date = st.date_input("Select Trend Pivot Date", datetime.now())
-    
-    if st.button("Generate Dates"):
-        cycles = {"45 Days": 45, "90 Days": 90, "180 Days": 180, "365 Days": 365}
-        for label, days in cycles.items():
-            dt = base_date + timedelta(days=days)
-            st.info(f"**{label}:** {dt.strftime('%d-%b-%Y')}")
-
-# --- 3. FIBONACCI RETRACEMENT ---
-elif tool == "Fibonacci Retracement":
-    st.header("🔢 Fibonacci Levels")
-    col_a, col_b = st.columns(2)
-    high = col_a.number_input("Swing High", value=22500.0)
-    low = col_b.number_input("Swing Low", value=21500.0)
-    
-    if st.button("Calculate Fibonacci"):
-        diff = high - low
-        levels = {
-            "0.0% (High)": high,
-            "23.6%": high - (diff * 0.236),
-            "38.2%": high - (diff * 0.382),
-            "50.0% (Pivot)": high - (diff * 0.5),
-            "61.8% (Golden Pocket)": high - (diff * 0.618),
-            "78.6%": high - (diff * 0.786),
-            "100.0% (Low)": low
-        }
-        
-        
-        
-        for k, v in levels.items():
-            if "Golden" in k:
-                st.warning(f"**{k}: {v:.2f}**")
-            else:
-                st.write(f"{k}: {v:.2f}")
-
-st.markdown("---")
-st.caption("Developed for Dhaval | Live Data via yfinance")
-
-
-
