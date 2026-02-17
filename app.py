@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 st.set_page_config(page_title="Gann & Fibonacci Calculator", layout="wide")
 
 st.title("📈 Trading Calculator: Gann & Fibonacci")
-st.write("Dhaval, yeh aapka customized trading tool hai.")
+st.write("Dhaval, yeh aapka updated aur fixed trading tool hai.")
 
 # --- SIDEBAR: Input Fields ---
 st.sidebar.header("User Inputs")
@@ -40,6 +40,43 @@ elif calculation_type == "Gann Date":
     base_date = st.date_input("Select Important Pivot Date (High/Low Date)", datetime.now())
     
     if st.button("Calculate Gann Dates"):
-        # Gann's key degree cycles converted to days
-        cycles = {"45°": 45, "90°": 90, "180°": 180
+        # Fixed: Bracket properly closed here
+        cycles = {
+            "45° Cycle": 45, 
+            "90° Cycle": 90, 
+            "180° Cycle": 180, 
+            "270° Cycle": 270, 
+            "360° Cycle (1 Year)": 365
+        }
+        
+        st.write("Upcoming Trend Change Dates:")
+        for label, days in cycles.items():
+            future_date = base_date + timedelta(days=days)
+            st.info(f"**{label}:** {future_date.strftime('%d-%b-%Y')}")
+
+# --- FUNCTIONALITY 3: Fibonacci Levels ---
+elif calculation_type == "Fibonacci Levels":
+    st.header("🔢 Fibonacci Retracement")
+    col_f1, col_f2 = st.columns(2)
+    high_p = col_f1.number_input("Recent High", value=18500.0)
+    low_p = col_f2.number_input("Recent Low", value=17500.0)
+    
+    if st.button("Calculate Fibonacci"):
+        diff = high_p - low_p
+        # Standard Fibonacci Ratios
+        levels = {
+            "0.0% (High)": high_p,
+            "23.6%": high_p - (diff * 0.236),
+            "38.2%": high_p - (diff * 0.382),
+            "50.0% (Pivot)": high_p - (diff * 0.5),
+            "61.8% (Golden Pocket)": high_p - (diff * 0.618),
+            "78.6%": high_p - (diff * 0.786),
+            "100.0% (Low)": low_p
+        }
+        
+        for level, val in levels.items():
+            st.write(f"**{level}:** {val:.2f}")
+
+st.markdown("---")
+st.caption("Developed for personal trading analysis.")
 
