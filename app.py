@@ -14,8 +14,8 @@ tool = st.sidebar.radio("Navigate to:", ["Gann Degrees", "Gann Date Pro", "Fibon
 
 # --- 1. GANN DEGREES ---
 if tool == "Gann Degrees":
-    st.header("🎯 Gann Degree Levels (Support & Resistance)")
-    price = st.number_input("Enter LTP (Last Traded Price)", min_value=1.0, value=22000.0)
+    st.header("🎯 Gann Levels (Support & Resistance)")
+    price = st.number_input("Enter LTP (Last Traded Price)", min_value=1.0, value=302)
     
     if st.button("Calculate Gann"):
         degrees = [45, 90, 180, 270, 360]
