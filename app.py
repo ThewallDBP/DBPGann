@@ -133,5 +133,4 @@ def get_spring_stocks(stock_list):
                     "Low (SL)": round(l_val, 2),
                     "Gann Target": round(gann_res, 2)
                 })
-    return spring_results
 
