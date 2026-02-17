@@ -99,5 +99,3 @@ def is_near_square(price, tolerance=0.1):
     diff = abs(price - nearest_square)
     return diff <= (price * tolerance / 100) # Tolerance in percentage
 
-# 324 ke liye check karega:
-# Agar ITC 323.5 se 324.5 ke bich hai, toh alert dega.
