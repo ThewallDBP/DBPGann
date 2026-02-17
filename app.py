@@ -103,42 +103,35 @@ import yfinance as yf
 import pandas as pd
 
 st.title("Dhaval's Spring Scanner & Gann Dashboard")
-
 # 1. Stocks ki list (Aap yahan aur bhi add kar sakte hain)
 stocks = ["NTPC.NS", "RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS", "ITC.NS"]
-
 def get_spring_stocks(stock_list):
     spring_results = []
     for ticker in stock_list:
-        data = yf.download(ticker, period="2d", interval="1d")
-        if len(data) >= 2:
-            # Latest candle ka data
+        # multi_level_index=False add kiya hai taaki error na aaye
+        data = yf.download(ticker, period="2d", interval="1d", multi_level_index=False)
+        
+        if not data.empty and len(data) >= 2:
+            # Latest candle ka single value lene ke liye .iloc[-1] ke saath .item() use karein
             high = data['High'].iloc[-1]
             low = data['Low'].iloc[-1]
             close = data['Close'].iloc[-1]
             
-            range_pct = ((high - low) / close) * 100
+            # Agar high/low abhi bhi series hain, toh unhe float mein badlein
+            h_val = float(high.iloc[0]) if hasattr(high, 'iloc') else float(high)
+            l_val = float(low.iloc[0]) if hasattr(low, 'iloc') else float(low)
+            c_val = float(close.iloc[0]) if hasattr(close, 'iloc') else float(close)
+            
+            range_pct = ((h_val - l_val) / c_val) * 100
             
             if range_pct < 1.0:
-                # Gann calculation (Simplified)
-                gann_res = (close**0.5 + 0.125)**2 # 45 degree approx
-                gann_sup = (close**0.5 - 0.125)**2
-                
+                gann_res = (c_val**0.5 + 0.125)**2
                 spring_results.append({
                     "Stock": ticker,
-                    "Range %": round(float(range_pct), 2),
-                    "High (Trigger)": round(float(high), 2),
-                    "Low (SL)": round(float(low), 2),
-                    "Gann Target": round(float(gann_res), 2)
+                    "Range %": round(range_pct, 2),
+                    "High (Trigger)": round(h_val, 2),
+                    "Low (SL)": round(l_val, 2),
+                    "Gann Target": round(gann_res, 2)
                 })
     return spring_results
-
-if st.button('Scan for Spring Candles'):
-    results = get_spring_stocks(stocks)
-    if results:
-        df = pd.DataFrame(results)
-        st.success(f"Found {len(results)} Spring Candles!")
-        st.table(df)
-    else:
-        st.warning("Aaj koi Spring Candle nahi mili.")
 
