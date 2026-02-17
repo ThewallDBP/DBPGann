@@ -7,7 +7,7 @@ st.title("🏹 Gann Square of 9")
 st.subheader("Support & Resistance Calculator")
 
 # User Input
-price = st.number_input("Enter Stock Price (e.g., ITC 313.75)", min_value=1.0, value=313.75)
+price = st.number_input("Enter Stock Price (e.g., ITC 302)", min_value=1.0, value=302)
 
 if price:
     sqrt_price = math.sqrt(price)
@@ -35,7 +35,7 @@ import streamlit as st
 import math
 from datetime import timedelta, date
 
-st.title("🏹 Dhaval's Gann Date & Price Pro")
+st.title("🏹 Dhaval's Price Pro")
 
 # --- SECTION 1: PRICE CALCULATOR ---
 price = st.number_input("Enter Current Price", min_value=1.0, value=313.75)
@@ -101,36 +101,3 @@ def is_near_square(price, tolerance=0.1):
 import streamlit as st
 import yfinance as yf
 import pandas as pd
-
-st.title("Dhaval's Spring Scanner & Gann Dashboard")
-# 1. Stocks ki list (Aap yahan aur bhi add kar sakte hain)
-stocks = ["NTPC.NS", "RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS", "ITC.NS"]
-def get_spring_stocks(stock_list):
-    spring_results = []
-    for ticker in stock_list:
-        # multi_level_index=False add kiya hai taaki error na aaye
-        data = yf.download(ticker, period="2d", interval="1d", multi_level_index=False)
-        
-        if not data.empty and len(data) >= 2:
-            # Latest candle ka single value lene ke liye .iloc[-1] ke saath .item() use karein
-            high = data['High'].iloc[-1]
-            low = data['Low'].iloc[-1]
-            close = data['Close'].iloc[-1]
-            
-            # Agar high/low abhi bhi series hain, toh unhe float mein badlein
-            h_val = float(high.iloc[0]) if hasattr(high, 'iloc') else float(high)
-            l_val = float(low.iloc[0]) if hasattr(low, 'iloc') else float(low)
-            c_val = float(close.iloc[0]) if hasattr(close, 'iloc') else float(close)
-            
-            range_pct = ((h_val - l_val) / c_val) * 100
-            
-            if range_pct < 1.0:
-                gann_res = (c_val**0.5 + 0.125)**2
-                spring_results.append({
-                    "Stock": ticker,
-                    "Range %": round(range_pct, 2),
-                    "High (Trigger)": round(h_val, 2),
-                    "Low (SL)": round(l_val, 2),
-                    "Gann Target": round(gann_res, 2)
-                })
-
