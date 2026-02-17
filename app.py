@@ -105,18 +105,44 @@ with col_banknifty:
     st.metric("BANK NIFTY", f"₹{bn_price}" if bn_price else "Loading...")
 
 st.markdown("---")
+import streamlit as st
+import math
+from datetime import timedelta, date
 
-# --- SIDEBAR: Navigation ---
-st.sidebar.header("Select Tool")
-tool = st.sidebar.radio("Navigate to:", ["Gann Degrees", "Gann Date Pro", "Fibonacci Retracement"])
+st.title("🏹 Dhaval's Price Pro")
 
-# --- 1. GANN DEGREES ---
-if tool == "Gann Degrees":
-    st.header("🎯 Gann Degree Levels")
-    # Option to use live price or manual
-    use_live = st.checkbox("Use Live Nifty Price", value=True)
-    if use_live and nifty_price:
-        price = nifty_price
-    else:
-        price = st.number_input("Enter Price Manually", value=22000.0)
+# --- SECTION 1: PRICE CALCULATOR ---
+price = st.number_input("Enter Current Price", min_value=1.0, value=313.75)
+if price:
+    sqrt_p = math.sqrt(price)
+    # Price targets
+    res_180 = (sqrt_p + 1.0)**2
+    sup_180 = (sqrt_p - 1.0)**2
+    st.write(f"**180° Price Resistance:** ₹{res_180:.2f}")
+    st.write(f"**180° Price Support:** ₹{sup_180:.2f}")
+
+st.write("---")
+
+# --- SECTION 2: GANN DATE CALCULATOR ---
+st.subheader("📅 Gann Time Cycle (Reversal Dates)")
+pivot_date = st.date_input("Select a Major High/Low Date", date(2024, 6, 4)) # Example: Election Result Low
+
+if pivot_date:
+    # We look for dates that are 90, 180, and 360 degrees in "Time"
+    time_degrees = {"90° (Minor)": 0.5, "180° (Major)": 1.0, "360° (Cycle)": 2.0}
     
+    # Simple Gann Time Cycle: Based on 1 day = 1 unit
+    days_from_pivot = (date.today() - pivot_date).days
+    sqrt_t = math.sqrt(days_from_pivot) if days_from_pivot > 0 else 1
+    
+    st.write(f"Days passed since pivot: **{days_from_pivot}**")
+    
+    for label, val in time_degrees.items():
+        # Calculate next "Time Square"
+        next_days = (sqrt_t + val)**2
+        reversal_date = pivot_date + timedelta(days=int(next_days))
+        st.info(f"**{label} Reversal Date:** {reversal_date.strftime('%d %b %Y')}")
+
+st.warning("RISK HAI TO ISHQ HAI")
+
+
